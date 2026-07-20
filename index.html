@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Feature Counter</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-blue: #3b82f6;
+            --card-green: #10b981;
+            --card-purple: #8b5cf6;
+            --card-orange: #f59e0b;
+            --text-dark: #1f2937;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .total-badge {
+            display: inline-block;
+            background: #e5e7eb;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .counters-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .counter-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f9fafb;
+            border-radius: 16px;
+            padding: 12px 16px;
+            border: 2px solid transparent;
+            transition: transform 0.1s ease;
+        }
+
+        /* Unique border colors for clarity */
+        .card-blue { border-color: var(--card-blue); }
+        .card-green { border-color: var(--card-green); }
+        .card-purple { border-color: var(--card-purple); }
+        .card-orange { border-color: var(--card-orange); }
+
+        .info-area {
+            flex: 1;
+            padding-right: 12px;
+        }
+
+        .category-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+        }
+
+        .count-display {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+        .text-blue { color: var(--card-blue); }
+        .text-green { color: var(--card-green); }
+        .text-purple { color: var(--card-purple); }
+        .text-orange { color: var(--card-orange); }
+
+        .actions-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Large Tap Targets for Mobile */
+        .btn-plus {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .btn-plus:active { transform: scale(0.92); }
+
+        .bg-blue { background-color: var(--card-blue); }
+        .bg-green { background-color: var(--card-green); }
+        .bg-purple { background-color: var(--card-purple); }
+        .bg-orange { background-color: var(--card-orange); }
+
+        .btn-minus {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1.5px solid #d1d5db;
+            background: white;
+            color: #6b7280;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-minus:active { transform: scale(0.9); }
+
+        .footer-controls {
+            margin-top: 24px;
+            text-align: center;
+        }
+
+        .btn-reset {
+            width: 100%;
+            padding: 14px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+        .btn-reset:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <header>
+            <h1>Feature Tracker</h1>
+            <div class="total-badge">Total Aspects: <span id="grand-total">0</span></div>
+        </header>
+
+        <div class="counters-grid">
+            <!-- Connectors -->
+            <div class="counter-card card-blue">
+                <div class="info-area">
+                    <div class="category-name">Connectors</div>
+                    <div class="count-display text-blue" id="count-connectors">0</div>
+                </div>
+                <div class="actions-area">
+                    <button class="btn-minus" onclick="changeCount('connectors', -1)">-</button>
+                    <button class="btn-plus bg-blue" onclick="changeCount('connectors', 1)">+</button>
+                </div>
+            </div>
+
+            <!-- New Vocabulary -->
+            <div class="counter-card card-green">
+                <div class="info-area">
+                    <div class="category-name">New Vocabulary</div>
+                    <div class="count-display text-green" id="count-vocabulary">0</div>
+                </div>
+                <div class="actions-area">
+                    <button class="btn-minus" onclick="changeCount('vocabulary', -1)">-</button>
+                    <button class="btn-plus bg-green" onclick="changeCount('vocabulary', 1)">+</button>
+                </div>
+            </div>
+
+            <!-- Recycled Grammar -->
+            <div class="counter-card card-purple">
+                <div class="info-area">
+                    <div class="category-name">Recycled Grammar</div>
+                    <div class="count-display text-purple" id="count-grammar">0</div>
+                </div>
+                <div class="actions-area">
+                    <button class="btn-minus" onclick="changeCount('grammar', -1)">-</button>
+                    <button class="btn-plus bg-purple" onclick="changeCount('grammar', 1)">+</button>
+                </div>
+            </div>
+
+            <!-- Data & Facts -->
+            <div class="counter-card card-orange">
+                <div class="info-area">
+                    <div class="category-name">Facts, Data or Numbers</div>
+                    <div class="count-display text-orange" id="count-data">0</div>
+                </div>
+                <div class="actions-area">
+                    <button class="btn-minus" onclick="changeCount('data', -1)">-</button>
+                    <button class="btn-plus bg-orange" onclick="changeCount('data', 1)">+</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-controls">
+            <button class="btn-reset" onclick="resetAll()">Reset All Counters</button>
+        </div>
+    </div>
+
+    <script>
+        // Track states
+        const state = {
+            connectors: 0,
+            vocabulary: 0,
+            grammar: 0,
+            data: 0
+        };
+
+        // Web Audio API Sound Generator
+        let audioCtx = null;
+
+        function playBeep(isReset = false) {
+            try {
+                // Initialize context on first click (browser security requirement)
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+
+                // If audio context is suspended, resume it
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                // Different tone if it's a reset action
+                if (isReset) {
+                    oscillator.type = 'triangle';
+                    oscillator.frequency.setValueAtTime(220, audioCtx.currentTime); // lower tone
+                    gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    oscillator.start();
+                    oscillator.stop(audioCtx.currentTime + 0.3);
+                } else {
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // Clean C5 note
+                    gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                    oscillator.start();
+                    oscillator.stop(audioCtx.currentTime + 0.1);
+                }
+            } catch (error) {
+                console.log("Audio not supported or blocked by browser settings", error);
+            }
+        }
+
+        // Handle button clicks
+        function changeCount(key, amount) {
+            // Prevent negative values
+            if (state[key] + amount < 0) return;
+
+            state[key] += amount;
+            document.getElementById(`count-${key}`).innerText = state[key];
+            
+            playBeep(false);
+            updateGrandTotal();
+        }
+
+        // Calculate and update top header sum
+        function updateGrandTotal() {
+            const total = state.connectors + state.vocabulary + state.grammar + state.data;
+            document.getElementById('grand-total').innerText = total;
+        }
+
+        // Reset everything
+        function resetAll() {
+            if (confirm("Are you sure you want to clear all counts?")) {
+                for (let key in state) {
+                    state[key] = 0;
+                    document.getElementById(`count-${key}`).innerText = 0;
+                }
+                playBeep(true);
+                updateGrandTotal();
+            }
+        }
+    </script>
+</body>
+</html>
